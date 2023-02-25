@@ -1,45 +1,44 @@
 {
-  description = "A very basic flake";
+  description = "Description for the project";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-22.11"; # We want to use packages from the binary cache
-
-    flake-utils.url = "github:numtide/flake-utils";
-
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
+    flake-parts.url = "github:hercules-ci/flake-parts";
     devenv.url = "github:cachix/devenv";
   };
 
   outputs = inputs @ {
-    self,
-    nixpkgs,
-    flake-utils,
+    flake-parts,
     devenv,
     ...
   }:
-    flake-utils.lib.eachSystem [flake-utils.lib.system.x86_64-linux flake-utils.lib.system.aarch64-linux flake-utils.lib.system.i686-linux] (system: let
-      inherit (builtins) substring;
+    flake-parts.lib.mkFlake {inherit inputs;} {
+      debug = true;
+      systems = ["x86_64-linux" "aarch64-darwin"];
+      perSystem = {
+        config,
+        self',
+        inputs',
+        pkgs,
+        system,
+        ...
+      }: {
+        devShells = let
+          defaultConfig = {
+            enterShell = "fish"; # Change default shell
 
-      # to work with older version of flakes
-      pkgs = nixpkgs.legacyPackages.${system};
-    in rec {
-      devShell = devenv.lib.mkShell {
-        inherit inputs pkgs;
-        modules = [
-          {
-            # Apps
-            difftastic.enable = true;
-            starship.enable = true;
-            
-            # Packages
             packages = with pkgs; [
+              # Mandatory tools
               git
               alejandra
-            ];
+              fish
+              tmux
 
-            scripts = {
-              run-dev.exec = "cargo run -- ";
-              run-prod.exec = "nix run .# -- ";
-            };
+              # Base editors
+              neovim
+              nano
+              vim
+            ];
 
             pre-commit.hooks = {
               # Nix
@@ -48,8 +47,43 @@
               # Markdown...
               prettier.enable = true;
             };
-          }
-        ];
+          };
+        in rec {
+          default =
+            devenv.lib.mkShell {
+              inherit inputs pkgs;
+              modules = [
+                defaultConfig
+              ];
+            }
+            // slidev
+            // vm
+            // code;
+
+          slidev = devenv.lib.mkShell {
+            inherit inputs pkgs;
+            modules = [
+              defaultConfig
+              (import ./slidev/module.nix)
+            ];
+          };
+
+          vm = devenv.lib.mkShell {
+            inherit inputs pkgs;
+            modules = [
+              defaultConfig
+              (import ./vm/module.nix)
+            ];
+          };
+
+          code = devenv.lib.mkShell {
+            inherit inputs pkgs;
+            modules = [
+              defaultConfig
+              (import ./code/module.nix)
+            ];
+          };
+        };
       };
-    });
+    };
 }
