@@ -49,16 +49,15 @@
             };
           };
         in rec {
-          default =
-            devenv.lib.mkShell {
-              inherit inputs pkgs;
-              modules = [
-                defaultConfig
-              ];
-            }
-            // slidev
-            // vm
-            // code;
+          default = devenv.lib.mkShell {
+            inherit inputs pkgs;
+            modules = [
+              defaultConfig
+              (import ./slidev/module.nix)
+              (import ./vm/module.nix)
+              (import ./code/module.nix)
+            ];
+          };
 
           slidev = devenv.lib.mkShell {
             inherit inputs pkgs;
