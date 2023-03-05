@@ -1,0 +1,50 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+# Main inspiration -> https://gitlab.com/xavki/presentations-kubernetes/-/blob/master/Vagrantfile
+
+# Provisionning
+
+$script_master = <<-'SCRIPT'
+echo "These are my \"quotes\"! I am provisioning my guest."
+
+sudo dnf update -y
+
+date > /etc/vagrant_provisioned_at
+SCRIPT
+
+$script_node = <<-'SCRIPT'
+echo "These are my \"quotes\"! I am provisioning my guest."
+
+sudo dnf update -y
+
+date > /etc/vagrant_provisioned_at
+SCRIPT
+
+# Box config
+
+Vagrant.configure("2") do |config|
+
+  # Master node
+
+  config.vm.define "kubmaster" do |kubmaster|
+    kubmaster.vm.box = "rockylinux/9"
+    kubmaster.vm.box_url = "rockylinux/9"
+    kubmaster.vm.hostname = 'kubmaster'
+
+    kubmaster.vm.provision "shell", inline: $script_master
+
+    kubmaster.vm.network :private_network, ip: "192.168.56.101"
+  end
+
+  # Worker node
+
+  config.vm.define "kubnode" do |kubnode|
+    kubnode.vm.box = "rockylinux/9"
+    kubnode.vm.box_url = "rockylinux/9"
+    kubnode.vm.hostname = 'kubnode'
+    
+    kubnode.vm.provision "shell", inline: $script_node
+
+    kubnode.vm.network :private_network, ip: "192.168.56.102"
+  end
+end
