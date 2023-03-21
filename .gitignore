@@ -1,3 +1,4 @@
 .devenv/
 .vagrant/
 .pre-commit-config.yaml
+k3s.yaml
