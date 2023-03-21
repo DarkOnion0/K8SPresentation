@@ -31,6 +31,9 @@ SCRIPT
 
 Vagrant.configure("2") do |config|
 
+  config.vm.synced_folder "../", "/vagrant", type: "rsync",
+    rsync__exclude: [".git/", ".pre-commit-config.yaml"]
+
   # Master node
 
   config.vm.define "kubmaster" do |kubmaster|
@@ -45,7 +48,7 @@ Vagrant.configure("2") do |config|
 
   # Worker node
 
-  config.vm.define "kubnode" do |kubnode|
+  config.vm.define "kubworker" do |kubnode|
     kubnode.vm.box = "rockylinux/9"
     kubnode.vm.box_url = "rockylinux/9"
     kubnode.vm.hostname = 'kubnode'
