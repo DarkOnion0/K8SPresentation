@@ -4,7 +4,7 @@ metadata:
   name: kuard
   namespace: default
 spec:
-  replica: 1 # Paramètre le deployment, lui indique combien de pod doit-il générer, 1 par défaux
+  replicas: 1 # Paramètre le deployment, lui indique combien de pod doit-il générer, 1 par défaux
   selector: # Paramètre le deployment, lui indique quel pod il doit manager
     matchLabels:
       app: kuard
