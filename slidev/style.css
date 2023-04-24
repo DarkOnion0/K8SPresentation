@@ -1,0 +1,22 @@
+/*
+p, li {
+    font-size: 1em !important;
+}
+*/
+
+h1 {
+  color: #88c0d0;
+}
+
+h2 {
+  font-size: 1.6rem !important;
+  color: #81a1c1;
+}
+
+strong {
+  color: #d08770;
+}
+
+a {
+  border-color: #3b4252 !important;
+}
