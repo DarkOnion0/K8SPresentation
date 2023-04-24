@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kuard
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kuard
+  template:
+    metadata:
+      labels:
+        app: kuard
+    spec:
+      containers:
+        - name: kuard
+          image: gcr.io/kuar-demo/kuard-amd64:blue
+          ports:
+            - containerPort: 80
+              hostPort: 8080
+              protocol: TCP
+              name: web
+          env:
+            - name: FOO
+              value: HelloWorld
+            - name: BAR
+              valueFrom:
+                secretKeyRef:
+                  name: kuard
+                  key: BAR
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kuard
+  namespace: default
+type: Opaque
+data:
+  BAR: S3ViZXJuZXRlcyBpcyBjb29sLCBpc24ndCBpdCA/IDopCg== # Kubernetes is cool, isn't it ? :)
