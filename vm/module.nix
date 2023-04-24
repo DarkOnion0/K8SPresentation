@@ -4,8 +4,8 @@
   };
 
   hosts = {
-    "kubemaster.local" = "192.168.56.101";
-    "kubeworker.local" = "192.168.56.102";
+    "kubemaster.local" = "192.168.244.2";
+    "kubeworker.local" = "192.168.244.3";
   };
 
   packages = with pkgs; [
