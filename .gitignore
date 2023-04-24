@@ -1,4 +1,10 @@
+# Nix 
 .devenv/
-.vagrant/
 .pre-commit-config.yaml
+
+# VM stuffs
+.vagrant/
 k3s.yaml
+
+# Nodejs stuff
+node_modules/
