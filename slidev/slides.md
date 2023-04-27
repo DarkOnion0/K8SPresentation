@@ -77,6 +77,29 @@ image:
 - Distribution alternative de Kubernetes
 
 ---
+
+## Kubernetes ❤️ YAML
+
+```yaml {all|1|2|3-8|4|5-8|6|7|8|10|12-17}
+foo: hello world # Une clé d'un dictionnaire en chaine de caractère
+bar: 123456789 # Une clé d'un dictionnaire en nombre
+baz: # Une clé d'un dictionnaire contenant elle aussi un dictionnaire
+  foo: 💙 nixos # Une clé d'un dictionnaire en chaine de caractère
+  bar: # Une clé d'un dictionnaire contenant une liste
+    - foo # Un élément de liste sous la forme d'une chaine de caractère
+    - 123 # Un élément de liste sous la forme d'un nombre
+    - baz: test # Un élément de liste représentant un dictionnaire, avec 1 clé et sa valeur sous la forme d'une chaine de caractère
+
+--- # Sépare 2 documents YAML, ca reviendrait à créer 2 fichiers séparée et à importer les 2. C'est très pratique pour regroupper plusieurs configs dans le meme fichier
+
+data: | # Permet d'écrire du texte sur plusiers ligne, c'est pratique pour configurer des fichiers dans les ConfigMaps
+   There once was a tall man from Ealing
+   Who got on a bus to Darjeeling
+       It said on the door
+       "Please don't sit on the floor"
+   So he carefully sat on the ceiling
+```
+---
 layout: center
 ---
 
@@ -140,33 +163,286 @@ $HOME/.kube/config
 
 ---
 
-## Kubernetes ❤️ YAML
+## L'aspect modulaire de Kubernetes
 
-```yaml {all|1|2|3-8|4|5-8|6|7|8|10|12-17}
-foo: hello world # Une clé d'un dictionnaire en chaine de caractère
-bar: 123456789 # Une clé d'un dictionnaire en nombre
-baz: # Une clé d'un dictionnaire contenant elle aussi un dictionnaire
-  foo: 💙 nixos # Une clé d'un dictionnaire en chaine de caractère
-  bar: # Une clé d'un dictionnaire contenant une liste
-    - foo # Un élément de liste sous la forme d'une chaine de caractère
-    - 123 # Un élément de liste sous la forme d'un nombre
-    - baz: test # Un élément de liste représentant un dictionnaire, avec 1 clé et sa valeur sous la forme d'une chaine de caractère
+<img style="height: 75%;" class="m-auto" src="https://d33wubrfki0l68.cloudfront.net/2475489eaf20163ec0f54ddc1d92aa8d4c87c96b/e7c81/images/docs/components-of-kubernetes.svg" />
 
---- # Sépare 2 documents YAML, ca reviendrait à créer 2 fichiers séparée et à importer les 2. C'est très pratique pour regroupper plusieurs configs dans le meme fichier
+---
+layout: center
+---
 
-data: | # Permet d'écrire du texte sur plusiers ligne, c'est pratique pour configurer des fichiers dans les ConfigMaps
-   There once was a tall man from Ealing
-   Who got on a bus to Darjeeling
-       It said on the door
-       "Please don't sit on the floor"
-   So he carefully sat on the ceiling
+## Les distributions Kubernetes
+
+---
+layout: items
+cols: 2
+---
+
+### Concepts
+
+::items::
+
+<v-clicks>
+
+  <div>
+    <img style="height: 60%;" class="m-auto" src="https://www.lego.com/cdn/cs/set/assets/blt70237dec0eef084a/10696.jpg?format=webply&fit=bounds&quality=75&width=800&height=800&dpr=1%201x,%20https://www.lego.com/cdn/cs/set/assets/blt70237dec0eef084a/10696.jpg?format=webply&fit=bounds&quality=60&width=800&height=800&dpr=2%202x,%20https://www.lego.com/cdn/cs/set/assets/blt70237dec0eef084a/10696.jpg?format=webply&fit=bounds&quality=55&width=800&height=800&dpr=3%203x,%20https://www.lego.com/cdn/cs/set/assets/blt70237dec0eef084a/10696.jpg?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5%201.5x" />
+    <p>Kubernetes</p>
+  </div>
+
+  <div>
+    <img style="height: 50%;" class="m-auto" src="https://www.lego.com/cdn/cs/set/assets/bltec012c948c003fba/10316_alt16.png?format=webply&fit=bounds&quality=75&width=800&height=800&dpr=1 1x, https://www.lego.com/cdn/cs/set/assets/bltec012c948c003fba/10316_alt16.png?format=webply&fit=bounds&quality=60&width=800&height=800&dpr=2 2x, https://www.lego.com/cdn/cs/set/assets/bltec012c948c003fba/10316_alt16.png?format=webply&fit=bounds&quality=55&width=800&height=800&dpr=3 3x, https://www.lego.com/cdn/cs/set/assets/bltec012c948c003fba/10316_alt16.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5 1.5x" />
+    <p>Les Distributions Kubernetes</p>
+  </div>
+
+</v-clicks>
+
+---
+layout: items
+cols: 3
+---
+
+### 3 grandes distributions
+
+::items::
+
+<v-clicks>
+
+<img style="height: 30vh;" class="m-auto" src="https://www.rancher.com/assets/img/brand-guidelines/project-logos/rke/logo-horizontal-rke.svg" />
+
+<img style="height: 15vh;" class="m-auto" src="https://k0sproject.io/images/k0s-logo.svg" />
+
+<img style="height: 30vh;" class="m-auto" src="https://k3s.io/img/k3s-logo-light.svg" />
+
+</v-clicks>
+
+---
+layout: center
+---
+
+## Démonstration
+
+---
+
+### Prérequis
+
+<v-clicks>
+
+1. Aller dans le dossier que je vous ai fait télécharger
+2. Aller dans le répertoire VM
+3. Exécuter la commande suivante `vagrant up`
+4. Ouvrez 2 fenêtres en parallèle pour se connecter au 2 serveurs en direct
+	1. `vagrant ssh kubemaster` -> master node
+	2. `vagrant ssh kubeworker` -> worker node
+
+</v-clicks>
+
+---
+
+### Installation
+
+
+<v-clicks>
+
+<div>
+
+#### Master
+
+```bash
+# Install K3S with unsafe settings but that are easier to use
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" K3S_TOKEN=123456 sh -s -
 ```
+
+</div>
+
+<div>
+
+#### Worker
+
+```bash
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="agent" K3S_URL=https://192.168.244.2:6443 K3S_TOKEN=123456 sh -s -
+```
+
+</div>
+
+<div>
+
+#### Récupérer les accès
+
+```bash
+sudo cat /etc/rancher/k3s/k3s.yaml
+```
+
+</div>
+
+`127.0.0.1` -> `192.168.244.2`
+
+<div>
+
+#### Check Finale
+
+```bash
+kubectl get nodes
+```
+
+</div>
+
+**🎉 Vous venez d'avoir votre 1re interaction avec le cluster 🎉**
+
+</v-clicks>
 
 ---
 layout: center
 ---
 
 # Les concepts de Kubernetes
+
+---
+layout: center
+---
+
+## Kubectl
+
+---
+
+### Read
+
+---
+
+### Create / Update
+
+---
+
+### Delete
+
+---
+
+### Logs
+
+---
+
+### Interagir Avec Le Conteneur
+
+---
+
+### Le Port-forwarding
+
+---
+
+## Nodes
+
+<v-clicks>
+
+<!--
+TODO: Le mettre en SVG et l'animer
+-->
+<img style="height: 40vh;" class="m-auto" src="/kubeXgopher.svg" />
+
+```bash
+kubectl get nodes -o wide
+```
+
+</v-clicks>
+
+---
+
+## La structure des ressources déployables
+
+```yaml {all|1|2|3|4|5|6-7}
+apiVersion: apps/v1 # Donne la version du fichier de configuration
+kind: bar # Définit le type de ce que l'on veut configurer
+metadata: # Ajoute des donner supplémentaire au déployement utilisables par d'autre application / kubernetes, des métadonées quoi 😁
+  name: HelloWorld # Donne un nom à notre config
+  namespace: foo # Donne le namespace ou celui-ci va s'appliquer, par defaut kubernets le met dans le namespasce `default`
+spec: # La configuration
+  ...
+```
+
+---
+layout: center
+---
+
+## Pods
+
+---
+
+### Présentation
+
+<v-clicks>
+
+```yaml {all|1-5|6|7|8}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers: # Définie les conteneur à déployer dans le pods
+  - name: nginx # Nom du conteneur
+    image: nginx:1.14.2 # Nom de l'image à télécharger
+```
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: kuard
+    image: gcr.io/kuar-demo/kuard-amd64:blue
+```
+
+</v-clicks>
+
+---
+
+### Manipulation - Déploiment
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: kuard
+    image: gcr.io/kuar-demo/kuard-amd64:blue
+```
+
+<v-clicks>
+
+1. `kubectl apply -f [PATH_TO_FILE]/kuard_pods.yaml`
+2. `kubectl get pods --watch` -> attendre que cela retourne ready
+3. `kubectl port-forward kuard-… 8080:8080` -> permet d'accéder à l'application, c'est comme du port forwarding avec ssh
+4. Aller sur [http://localhost:8080/](http://localhost:8080/)
+5. ✨ It works !!! ✨
+
+</v-clicks>
+
+---
+
+### Manipulation - Test
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: kuard
+    image: gcr.io/kuar-demo/kuard-amd64:blue
+```
+
+<v-clicks>
+
+1. `kubectl get pods --watch` -> executer les commandes dans des nouveaux terminaux
+2. `kubectl delete pods kuard-…` -> essayez de supprimer le pods
+3. Le pods à disparu
+6. ✨ It works !!! ✨
+
+</v-clicks>
+
+---
 
 ---
 layout: center
