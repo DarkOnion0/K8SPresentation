@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kuard
+  name: kuard-sec
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: kuard
+      app: kuard-sec
   template:
     metadata:
       labels:
-        app: kuard
+        app: kuard-sec
     spec:
       containers:
         - name: kuard

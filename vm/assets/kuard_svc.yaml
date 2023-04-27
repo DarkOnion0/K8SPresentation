@@ -16,17 +16,17 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kuard
+  name: kuard-svc
   namespace: default
 spec:
   replicas: 1 # Paramètre le deployment, lui indique combien de pod doit-il générer, 1 par défaux
   selector: # Paramètre le deployment, lui indique quel pod il doit manager
     matchLabels:
-      app: kuard
+      app: kuard-svc
   template: # Le fichier de config du pod -> [Pods | Kubernetes](https://kubernetes.io/docs/concepts/workloads/pods/#pod-templates)
     metadata:
       labels:
-        app: kuard
+        app: kuard-svc
     spec:
       containers:
         - name: kuard

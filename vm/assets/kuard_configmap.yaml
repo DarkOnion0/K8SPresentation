@@ -13,17 +13,17 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kuard
+  name: kuard-cm
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: kuard
+      app: kuard-cm
   template:
     metadata:
       labels:
-        app: kuard
+        app: kuard-cm
     spec:
       containers:
         - name: kuard
