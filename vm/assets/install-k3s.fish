@@ -32,9 +32,11 @@ if set --query _flag_type
 
     if string match -q "master" $_flag_type # Launch the master install script
         curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" K3S_TOKEN=$PASSWORD sh -s -
+        printf "\n\nKubeconfig file :"
+        printf "\n=================\n"
         sudo cat /etc/rancher/k3s/k3s.yaml | sed "s|127.0.0.1|$SRV_IP|g"
     else if string match -q "worker" $_flag_type # Launch the worker install script
-        curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="agent" K3S_URL=https://$SRV_IP K3S_TOKEN=$PASSWORD sh -s -
+        curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="agent" K3S_URL=https://$SRV_IP:6443 K3S_TOKEN=$PASSWORD sh -s -
     else # Crash if the value passed is not worker or master
         printf "%s is not a correct value for --type\n" $_flag_type
         exit
