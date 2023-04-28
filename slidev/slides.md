@@ -527,7 +527,7 @@ spec:
 </v-clicks>
 
 ---
-layout: Center
+layout: center
 ---
 
 ## Storage
