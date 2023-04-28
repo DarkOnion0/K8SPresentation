@@ -10,7 +10,7 @@ spec:
       protocol: TCP
       targetPort: web
   selector:
-    app: kuard
+    app: kuard-svc
 
 ---
 apiVersion: apps/v1
