@@ -25,7 +25,7 @@
       }: {
         devShells = let
           defaultConfig = {
-            enterShell = "fish"; # Change default shell
+            #enterShell = "fish"; # Change default shell
 
             packages = with pkgs; [
               # Mandatory tools
