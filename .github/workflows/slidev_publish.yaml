@@ -26,13 +26,13 @@ jobs:
       - uses: cachix/install-nix-action@v15
         with:
           extra_nix_config: |
-            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            acess-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
-        run: nix develop .#slidev --command pnpm install
+        run: cd slidev/ && nix develop .#slidev --command pnpm install
 
       - name: Build
-        run: nix develop .#slidev --command slidev build --base K8SPresentation
+        run: cd slidev/ && nix develop .#slidev --command pnpm slidev build --base K8SPresentation
 
       - name: Deploy pages
         uses: crazy-max/ghaction-github-pages@v2
