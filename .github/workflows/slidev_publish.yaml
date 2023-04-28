@@ -26,7 +26,10 @@ jobs:
       - uses: cachix/install-nix-action@v15
         with:
           extra_nix_config: |
-            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            acess-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            
+      - name: Move to the presentation directory
+        run: cd slidev/
 
       - name: Install dependencies
         run: nix develop .#slidev --command pnpm install
