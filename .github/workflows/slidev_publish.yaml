@@ -10,12 +10,6 @@ on:
       - "slidev/**"
       - ".github/**"
 
-  pull_request:
-    types: [opened, reopened, synchronize]
-    paths:
-      - "slidev/**"
-      - ".github/**"
-
   workflow_dispatch:
 
 permissions:
