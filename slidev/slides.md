@@ -306,25 +306,109 @@ layout: center
 
 ### Read
 
+<v-clicks>
+
+```bash
+# Affiche les élément dans un cluster k8s suivant le contexte utilisé
+kubectl get $OBJECT_CATEGORIE
+
+# Affiche l'élément de la catégorie séléctionnée dans un cluster k8s suivant le contexte utilisé
+kubectl get $OBJECT_CATEGORIE $NAME
+```
+
+```bash
+kubectl get deployments -n kube-system
+kubectl get deployments coredns -n kube-system
+```
+
+<hr class="my-10">
+
+```bash
+# Affiche les informations détaillés d'un objet suivant le contexte utilisé
+kubectl describe $OBJECT_CATEGORIE $NAME 
+```
+
+```bash
+kubectl describe deployments coredns -n kube-system
+```
+
+</v-clicks>
+
 ---
 
 ### Create / Update
+
+<v-clicks>
+
+```bash
+# Applique la configuration des fichiers spécifés au cluster suivant le contexte utilisé
+kubectl apply -f $FILES
+```
+
+```bash
+kubectl apply -f ./assets/kuard.yaml
+kubect get pods
+```
+
+</v-clicks>
 
 ---
 
 ### Delete
 
+<v-clicks>
+
+```bash
+# Applique la configuration des fichiers spécifés au cluster suivant le contexte utilisé
+kubectl delete -f $FILES
+```
+
+```bash
+kubectl delete -f ./assets/kuard.yaml
+kubect get pods
+```
+
+</v-clicks>
+
 ---
 
 ### Logs
+
+<v-clicks>
+
+```bash
+ kubectl logs $POD_NAME # Affiche les logs
+```
+
+```bash
+ kubectl logs coredns-[...] # Affiche les logs de coredns
+```
+
+</v-clicks>
 
 ---
 
 ### Interagir Avec Le Conteneur
 
+<v-clicks>
+
+```bash
+kubectl exec -it $POD_NAME -- bash # Permet de se *connecter* au pods
+```
+
+```bash
+kubectl exec -it coredns-[...] -- bash # Permet de se *connecter* au pods coredns
+```
+
+</v-clicks>
+
 ---
 
 ### Le Port-forwarding
+
+```bash
+kubectl port-forward $POD_NAME $PORT_HOST:$PORT_KUB
+```
 
 ---
 
@@ -443,6 +527,280 @@ spec:
 </v-clicks>
 
 ---
+layout: Center
+---
+
+## Storage
+
+---
+
+### Les volumes
+
+<v-clicks>
+
+- Stocker des informations
+- Sortes de partitions pour conteneur
+
+</v-clicks>
+
+<v-click>
+
+```yaml {all|9-11|10|11|12-14|13|14}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: foo
+spec:
+  containers:
+  - name: bar
+    image: baz
+    volumeMounts: # Monte un volume dans le conteneur
+      - name: quz # Prends le volume importé dans le pods du nom de `quz`
+        mountPath: /config # Monte le volume dans `/config`
+  volumes: # Définit les volumes dans un pods
+    - name: quz # Crééer un volume du nom `quz`
+      {{ .StorageType }} # Les configs spécifiques aux types de volumes
+```
+
+</v-click>
+
+---
+layout: center
+---
+
+## Deployments
+
+---
+
+### Présentation
+
+<v-clicks>
+
+- Le moyens le plus simple pour déployer un *workload*
+- Gére les états des pods et autre élément nécessaire
+- $\text{pods config} \subset \text{deployment config}$
+
+</v-clicks>
+
+---
+
+### Analyse du fichier
+
+```yaml {all|7|8-10|11-23}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kuard-deployment
+  namespace: default
+spec:
+  replicas: 1 # Paramètre le deployment, lui indique combien de pod doit-il générer, 1 par défaux
+  selector: # Paramètre le deployment, lui indique quel pod il doit manager
+    matchLabels: 
+      app: kuard-deployment
+  template: # Le fichier de config du pod
+    metadata:
+      labels:
+        app: kuard-deployment
+    spec:
+      containers:
+        - name: kuard-deployment
+          image: gcr.io/kuar-demo/kuard-amd64:blue
+	      ports:
+	        - containerPort: 80 # Le port à exposer
+	          hostPort: 8080 # Le port exposé sur un noeud
+	          protocol: TCP
+	          name: web # Donne un nom au port pour le retrouvre plus simplement
+```
+
+---
+
+### Manipulation - Déploiment
+
+<v-clicks>
+
+
+1. `kubectl apply -f [PATH_TO_FILE]/kuard.yaml`
+2. `kubectl get deployments -o wide --watch` -> attendre que cela retourne ready
+3. `kubectl get pods` -> voir que le pod est bien créé en parallèle
+4. `kubectl port-forward kuard-… 8080:8080` -> permet d'accéder à l'application, c'est comme du port forwarding avec ssh
+5. Aller sur [http://localhost:8080/](http://localhost:8080/)
+6. ✨ It works !!! ✨
+
+</v-clicks>
+
+---
+
+### Manipulation - Test
+
+<v-clicks>
+
+1. `kubectl get deployments -o wide --watch` et `kubectl get pods --watch` -> executer les commandes dans des nouveaux terminaux
+2. `kubectl delete pods kuard-…` -> essayez de supprimer le pods
+3. Le pods est recréé => un des roles du deployments
+6. ✨ It works !!! ✨
+
+</v-clicks>
+
+---
+layout: center
+---
+
+## Services
+
+---
+
+### Présentation
+
+<v-clicks>
+
+- Résolve le problème de découvertes des services
+- Addons du DNS pour K8S
+- Regrouppe plusieurs IPs sous une IP plus stable
+- Redistribue les reqêtes
+- `$SERVICE_NAME.svg.$NAMESPACE_NAME.cluster.local`
+
+</v-clicks>
+
+---
+
+### Types
+
+<v-click>
+
+#### ClusterIP
+
+Service de base
+
+</v-click>
+
+
+<v-click>
+
+#### NodePorts
+
+</v-click>
+
+<v-clicks>
+
+- Plages de ports entre `30000-32767`
+- `.spec.type` à `NodePorts`
+- Expose sur tous les nodes
+
+</v-clicks>
+
+---
+
+### Manip
+
+```yaml {all|7|8-11|9|10|11|12-13|all}
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: default
+  name: kuard
+spec:
+  type: ClusterIP # Définit le type (déjà le par défaut, juste pour l'exemple)
+  ports: # Définit les ports du service
+    - port: 9080 # Définit le port du service
+      protocol: TCP # Définit le protocole
+      targetPort: web # Définint le port de déstination
+  selector: # Applique les règles pour choisirs à qui rediriger le flux
+    app: kuard
+```
+
+<v-clicks>
+
+1. `kubectl apply -f [PATH_TO_FILE]/kuard_svc.yaml`
+2. `kubectl get service`
+3. `kubectl port-forward services/kuard 8080:9080`
+4. C'est tout 😅 
+
+</v-clicks>
+
+---
+
+### Schéma du trafique
+
+<img style="width: 100%;" class="m-auto" src="/networkSVC.svg" />
+
+---
+layout: center
+---
+
+## IngressRoute
+
+---
+
+### Présentation
+
+<v-clicks>
+
+- Configure l'ingress
+- Reverse Proxy (ingress)
+- LoadBalancer (ingress)
+
+</v-clicks>
+
+---
+
+### Présentation du fichier
+
+```yaml {all|7-9|10-15|12|13-15|14|15}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: foo
+  namespace: default
+spec: # Configuration de l'IngressRoute
+  entryPoints: # Spécifie sur quel port d'entré associé l'IngressRoute
+    - websecure
+    - web
+  routes: # Définit les réls paramètres de rediréctions
+    - kind: Rule # ???
+      match: Host(`foo.bar.com`) # indique les paramètres conditions à remplir pour appliquer cette règle
+      services: # fait la redirections avec les service
+        - name: foo # le nom du service, /!\ Il faut que le service soit dans le meme namespace que celui de l'ingressroute /!\
+          port: 8080 # le port du service
+```
+
+---
+
+### Manip - Fichier
+
+```yaml
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: kuard
+  namespace: default
+spec:
+  entryPoints:
+    - websecure
+    - web
+  routes:
+    - kind: Rule
+      match: Host(`kuard.kubemaster.local`)
+      services:
+        - name: kuard
+          port: 9080
+```
+
+<v-clicks>
+
+1. `kubectl apply -f [PATH_TO_FILE]/kuard_ingress.yaml`
+2. `kubectl get ingressroutes.traefik.containo.us`
+3. Ouvrir votre navigateur
+4. Aller à [http://kuard.kubemaster.local](http://kuard.kubemaster.local)
+5. ✨ It works !!! ✨
+
+</v-clicks>
+
+---
+
+### Schéma du trafique
+
+<img style="width: 100vw" class="m-auto" src="/networkINGRESSROUTE.svg" />
+
 
 ---
 layout: center
