@@ -32,7 +32,7 @@ jobs:
         run: cd slidev/ && nix develop .#slidev --command pnpm install
 
       - name: Build
-        run: cd slidev/ && nix develop .#slidev --command slidev build --base K8SPresentation
+        run: cd slidev/ && nix develop .#slidev --command pnpm slidev build --base K8SPresentation
 
       - name: Deploy pages
         uses: crazy-max/ghaction-github-pages@v2
