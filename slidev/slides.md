@@ -32,7 +32,7 @@ hideInToc: true
 
 # Plan
 
-<Toc maxDepth=2 />
+<Toc maxDepth=1 />
 
 ---
 layout: center
@@ -71,10 +71,14 @@ image:
 
 ## Kubernetes, Cloud Ready ou cloud only
 
+<v-clicks>
+
 - Compléxité à la maintenance
 - Nouveau paradigme -> *cloud native*
 - Couteux ! 💸
 - Distribution alternative de Kubernetes
+
+</v-clicks>
 
 ---
 
@@ -801,10 +805,326 @@ spec:
 
 <img style="width: 100vw" class="m-auto" src="/networkINGRESSROUTE.svg" />
 
+---
+layout: center
+---
+
+## Secrets & ENV Vars
+
+---
+
+### Présentation
+
+<v-clicks>
+
+- Moyens de configuration (ENV)
+- Contienent des tokens (SECRETS)
+- Peuvent être utilisés comme des ENVs (SECRETS)
+- Stockés en base64 (SECRETS)
+
+</v-clicks>
+
+<v-clicks>
+
+```bash
+echo "MY_SUPER_SECRET_VALUE" | base64 -w 0
+```
+
+<div>
+<br />
+
+<twemoji-warning /> **Warning :** base64 != chiffrement
+
+```bash
+echo "BASE64_STRING" | base64 --decode
+```
+
+<br />
+</div>
+</v-clicks>
+
+---
+
+### Analyse du fichier - Secrets
+
+<v-clicks>
+
+```yaml {all|5|6-8|7|8|all}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysecret
+type: Opaque # Dit que le secret peut contenir des valeurs arbitraires
+data: # Contient les valeurs du secrets
+  username: YWRtaW4= # Chaine en bas64 -> admin
+  password: MWYyZDFlMmU2N2Rm # Chaine en base64 -> 1f2d1e2e67df
+```
+
+```yaml {all|6|7-8|8}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: myregistrykey
+  namespace: awesomeapps
+type: kubernetes.io/dockerconfigjson # Dit que le secret contient des identifiants à un registry sous format JSON
+data: # Contient les valeurs du secrets
+  .dockerconfigjson: UmVhbGx5IHJlYWxseSByZWVlZWVlZWVlZWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGx5eXl5eXl5eXl5eXl5eXl5eXl5eSBsbGxsbGxsbGxsbGxsbG9vb29vb29vb29vb29vb29vb29vb29vb29vb25ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubmdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2cgYXV0aCBrZXlzCg== # Chaine en base64 -> Really really reeeeeeeeeeaaaaaaaaaaaaaaaaaaaaaaaaaaalllllllllllllllllllllllllllllllyyyyyyyyyyyyyyyyyyyy llllllllllllllooooooooooooooooooooooooooonnnnnnnnnnnnnnnnnnnnnnnnggggggggggggggggggg auth keys
+```
+
+</v-clicks>
+
+---
+
+### Analyse du fichier - ENVs & Secrets 
+
+```yaml {all|6-23|16-23|17-18|17|18|19-23|19|20|21|22|23}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kuard
+  namespace: default
+spec: # Config de base du deployments
+  replicas: 1
+  selector:
+    ...
+  template:
+    ...
+    spec:
+      containers:
+        - name: kuard
+          image: gcr.io/kuar-demo/kuard-amd64:blue
+          env: # Définie des varibles d'environements
+		    - name: FOO # Le nom de la variable
+		      value: HelloWorld # Sa valeur
+		    - name: BAR # Le nom de la variable
+		      valueFrom: # Indique que la valeur doit être cherché dans un autre fichier
+                secretKeyRef: # Dit qu'il s'agit d'un secret
+                  name: kuard # Le nom du secret /!\ NAMESPACE /!\
+                  key: BAR # Indique qu'elle valeur prendre dans le secret
+```
+
+---
+
+### Manip - Secret
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kuard
+  namespace: default
+type: Opaque
+data:
+	BAR: S3ViZXJuZXRlcyBpcyBjb29sLCBpc24ndCBpdCA/IDopCg== # Kubernetes is cool, isn't it ? :)
+```
+
+---
+
+### Manip - Deployment
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kuard-secret
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    ...
+  template:
+    ...
+    spec:
+      containers:
+        - name: kuard-secret
+          image: gcr.io/kuar-demo/kuard-amd64:blue
+          ...
+          env:
+		    - name: FOO
+		      value: HelloWorld
+		    - name: BAR
+		      valueFrom:
+                secretKeyRef:
+                  name: kuard
+                  key: BAR 
+```
+
+---
+
+### Manip - Commandes
+
+<v-clicks>
+
+1. `kubectl apply -f [PATH_TO_FILE]/kuard_sec.yaml`
+2. `kubectl get secret`
+3. `kubectl get pods --watch` -> attendre que cela retourne ready
+4. `kubectl port-forward kuard-… 8080:8080` -> permet d'accéder à l'application, c'est comme du port forwarding avec ssh
+5. Aller sur [http://localhost:8080/-/env](http://localhost:8080/-/env) 
+6. ✨ It works !!! ✨
+
+</v-clicks>
+
+---
+layout: center
+---
+
+## ConfigMaps
+
+---
+
+### Présentation
+
+<v-clicks>
+
+- Contient max 1Mo
+- Sorte de système de fichiers déclaratif
+
+</v-clicks>
+
+---
+
+### Analyse du fichier - ConfigMaps
+
+```yaml {all|5-17|7|8|10-17}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: game-demo
+data: # Les données à définir
+  # Ce sont des valeurs définies comme des varibles d'environnement; chaque clé fait référence à une valeur simple
+  player_initial_lives: "3"
+  ui_properties_file_name: "user-interface.properties"
+
+  # Ce sont des valeurs semblables à des fichiers
+  game.properties: |
+    enemy.types=aliens,monsters
+    player.maximum-lives=5    
+  user-interface.properties: |
+    color.good=purple
+    color.bad=yellow
+    allow.textmode=true  
+```
+
+---
+
+### Analyse du fichier - Imports
+
+```yaml {all|14-25|15-19|15|16|17|18|19|20-21|22-25|24|25}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  ...
+spec:
+  selector:
+    ...
+  template:
+    ...
+    spec:
+      containers:
+        - name: kuard
+          image: gcr.io/kuar-demo/kuard-amd64:blue
+          env: # Définit des varibles d'environnement
+		    - name: BAR # Le nom de la variable
+		      valueFrom: # Indique que la valeur doit être cherchée dans un autre fichier
+                configMapKeyRef: # Dit qu'il s'agit d'une Configmaps
+                  name: foobar # Le nom du Configmaps /!\ Namespace /!\
+                  key: BAR # Indique quelle valeur prendre dans la Configmaps
+		 volumeMounts: # Monte la configmaps
+           ...
+      volumes:
+        - name: foobarbaz
+          configMap: # Précise que le volume est du genre configmaps
+            name: qux # indique le nom de la configmaps
+```
+---
+
+### Manip - ConfigMap
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kuard
+  namespace: default
+data:
+  FOO: HelloWorld
+  BAR: "Kubernetes is cool, isn't it ? :)"
+  k8s.md: |
+    **💙 K8S 💙**
+```
+
+---
+
+### Manip - Deployment & Commandes
+
+Ouvrez le fichier `kuard_configmap.yaml` <twemoji-grinning-face-with-sweat />
+
+<v-clicks>
+
+1. `kubectl apply -f [PATH_TO_FILE]/kuard_configmap.yaml`
+2. `kubectl get configmaps`
+3. `kubectl get pods --watch` -> attendre que cela retourne ready
+4. `kubectl port-forward kuard-… 8080:8080` -> permet d'accéder à l'application, c'est comme du port forwarding avec ssh
+5. Aller sur [http://localhost:8080/-/env](http://localhost:8080/-/env) 
+6. Aller sur [http://localhost:8080/fs/](http://localhost:8080/fs/) 
+7. Aller dans le dossier config et regarder les fichiers de la configmap
+8. ✨ It works !!! ✨
+
+
+</v-clicks>
 
 ---
 layout: center
 ---
 
 # Les mots de la fin
+
+---
+layout: center
+---
+
+## Aplications *Système*
+
+---
+layout: center
+---
+
+## Applications De Déploiements
+
+---
+layout: center
+---
+
+## Applications de gestion de cluster
+
+---
+
+## Ressources pour continuer
+
+### K8S
+
+- https://xavki.blog/kubernetes-tutoriaux-francais/
+- https://www.youtube.com/@justmeandopensource/playlists
+- https://www.youtube.com/@TechnoTim/playlists
+- https://www.youtube.com/@TechWorldwithNana/playlists
+- https://www.oreilly.com/library/view/kubernetes-up-and/9781098110192/
+
+### Apps
+
+- https://xavki.blog/prometheus-grafana-tutoriaux-francais/
+- https://xavki.blog/helm-tutoriels-fr-et-gratuits/
+
+---
+
+## Conclusion
+
+<v-clicks>
+
+- Orchestrateur de conteneur
+- Configuration déclarative
+- Parfois compliqué
+- **MAIS** super communauté / ecosystème => simple
+- Bien plus qu'une simple plateforme d'auto-héberbement...
+
+</v-clicks>
 
