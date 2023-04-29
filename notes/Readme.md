@@ -1,0 +1,3 @@
+Ce dossier contient la présentation Kubernetes sous le format Markdown, il peut être visionné dans n'importe quel éditeur de texte moderne (moderne == vim), **MAIS** il est fortement recommandé de l'ouvrir à l'aide du logiciel [obisidan](https://obsidian.md) pour l'aspect pratique des liens entre les pages, les éléments de styles...
+
+**\*PS:\*\*** L'éditeur de Nextcloud pour le Markdown m'a souvent causé des problèmes quand on récupère le fichier source a posteriori, il serait donc préférable ne pas l'utiliser 😅 \*
