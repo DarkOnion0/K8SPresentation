@@ -1127,4 +1127,3 @@ layout: center
 - Bien plus qu'une simple plateforme d'auto-héberbement...
 
 </v-clicks>
-
