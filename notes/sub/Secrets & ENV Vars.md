@@ -83,7 +83,7 @@ spec:
       containers:
         - name: kuard
           image: gcr.io/kuar-demo/kuard-amd64:blue
-		  env: # Définit des varibles d'environement
+		  env: # Définit des variables d'environement
 		    - name: FOO # Le nom de la variable
 		      value: HelloWorld # Sa valeur
 

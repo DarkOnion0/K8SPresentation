@@ -76,7 +76,7 @@ image:
 - Compléxité à la maintenance
 - Nouveau paradigme -> *cloud native*
 - Couteux ! 💸
-- Distribution alternative de Kubernetes
+- Distributions alternatives de Kubernetes
 
 </v-clicks>
 
@@ -313,7 +313,7 @@ layout: center
 <v-clicks>
 
 ```bash
-# Affiche les élément dans un cluster k8s suivant le contexte utilisé
+# Affiche les éléments dans un cluster k8s suivant le contexte utilisé
 kubectl get $OBJECT_CATEGORIE
 
 # Affiche l'élément de la catégorie séléctionnée dans un cluster k8s suivant le contexte utilisé
@@ -581,7 +581,7 @@ layout: center
 <v-clicks>
 
 - Le moyens le plus simple pour déployer un *workload*
-- Gére les états des pods et autre élément nécessaire
+- Gère les états des pods et autre éléments nécessaires
 - $\text{pods config} \subset \text{deployment config}$
 
 </v-clicks>
@@ -640,7 +640,7 @@ spec:
 
 1. `kubectl get deployments -o wide --watch` et `kubectl get pods --watch` -> executer les commandes dans des nouveaux terminaux
 2. `kubectl delete pods kuard-…` -> essayez de supprimer le pods
-3. Le pods est recréé => un des roles du deployments
+3. Le pod est recréé => un des roles du deployments
 6. ✨ It works !!! ✨
 
 </v-clicks>
@@ -657,10 +657,10 @@ layout: center
 
 <v-clicks>
 
-- Résolve le problème de découvertes des services
+- Résoudre le problème de découvertes des services
 - Addons du DNS pour K8S
-- Regrouppe plusieurs IPs sous une IP plus stable
-- Redistribue les reqêtes
+- Regroupe plusieurs IPs sous une IP plus stable
+- Redistribue les requêtes
 - `$SERVICE_NAME.svg.$NAMESPACE_NAME.cluster.local`
 
 </v-clicks>
@@ -686,7 +686,7 @@ Service de base
 
 <v-clicks>
 
-- Plages de ports entre `30000-32767`
+- Plage de ports entre `30000-32767`
 - `.spec.type` à `NodePorts`
 - Expose sur tous les nodes
 
@@ -759,11 +759,11 @@ spec: # Configuration de l'IngressRoute
   entryPoints: # Spécifie sur quel port d'entré associé l'IngressRoute
     - websecure
     - web
-  routes: # Définit les réls paramètres de rediréctions
+  routes: # Définit les réels paramètres de rediréctions
     - kind: Rule # ???
-      match: Host(`foo.bar.com`) # indique les paramètres conditions à remplir pour appliquer cette règle
-      services: # fait la redirections avec les service
-        - name: foo # le nom du service, /!\ Il faut que le service soit dans le meme namespace que celui de l'ingressroute /!\
+      match: Host(`foo.bar.com`) # indique les paramètres et conditions à remplir pour appliquer cette règle
+      services: # fait la redirections avec les services
+        - name: foo # le nom du service, /!\ Il faut que le service soit dans le même namespace que celui de l'ingressroute /!\
           port: 8080 # le port du service
 ```
 
@@ -896,7 +896,7 @@ spec:
       containers:
         - name: kuard
           image: gcr.io/kuar-demo/kuard-amd64:blue
-		  env: # Définit des varibles d'environement
+		  env: # Définit des variables d'environement
 		    - name: FOO # Le nom de la variable
 		      value: HelloWorld # Sa valeur
 
@@ -991,7 +991,7 @@ kind: ConfigMap
 metadata:
   name: game-demo
 data: # Les données à définir
-  # Ce sont des valeurs définies comme des varibles d'environnement; chaque clé fait référence à une valeur simple
+  # Ce sont des valeurs définies comme des variables d'environnement; chaque clé fait référence à une valeur simple
   player_initial_lives: "3"
   ui_properties_file_name: "user-interface.properties"
 
@@ -1028,7 +1028,7 @@ spec:
       containers:
         - name: kuard
           image: gcr.io/kuar-demo/kuard-amd64:blue
-		  env: # Définit des varibles d'environnement
+		  env: # Définit des variables d'environnement
 		    - name: BAR # Le nom de la variable
 		      valueFrom: # Indique que la valeur doit être cherchée dans un autre fichier
                 configMapKeyRef: # Dit qu'il s'agit d'une Configmaps
@@ -1071,9 +1071,9 @@ Ouvrez le fichier `kuard_configmap.yaml` <twemoji-grinning-face-with-sweat />
 2. `kubectl get configmaps`
 3. `kubectl get pods --watch` -> attendre que cela retourne ready
 4. `kubectl port-forward kuard-… 8080:8080` -> permet d'accéder à l'application, c'est comme du port forwarding avec ssh
-5. Aller sur [http://localhost:8080/-/env](http://localhost:8080/-/env) 
-6. Aller sur [http://localhost:8080/fs/](http://localhost:8080/fs/) 
-7. Aller dans le dossier config et regarder les fichiers de la configmap
+5. Allez sur [http://localhost:8080/-/env](http://localhost:8080/-/env) 
+6. Allez sur [http://localhost:8080/fs/](http://localhost:8080/fs/) 
+7. Allez dans le dossier config et regarder les fichiers de la configmap
 8. ✨ It works !!! ✨
 
 
@@ -1089,7 +1089,7 @@ layout: center
 layout: center
 ---
 
-## Aplications *Système*
+## Applications *Système*
 
 ---
 layout: center

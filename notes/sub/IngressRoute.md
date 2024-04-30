@@ -30,11 +30,11 @@ spec: # Configuration de l'IngressRoute
   entryPoints: # Spécifie sur quel port d'entré associé l'IngressRoute
     - websecure
     - web
-  routes: # Définit les réls paramètres de rediréctions
+  routes: # Définit les réels paramètres de rediréctions
     - kind: Rule # ???
-      match: Host(`foo.bar.com`) # indique les paramètres conditions à remplir pour appliquer cette règle
-      services: # fait la redirections avec les service
-        - name: foo # le nom du service, /!\ Il faut que le service soit dans le meme namespace que celui de l'ingressroute /!\
+      match: Host(`foo.bar.com`) # indique les paramètres et conditions à remplir pour appliquer cette règle
+      services: # fait la redirections avec les services
+        - name: foo # le nom du service, /!\ Il faut que le service soit dans le même namespace que celui de l'ingressroute /!\
           port: 8080 # le port du service
 ```
 

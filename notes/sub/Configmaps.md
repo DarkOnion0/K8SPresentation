@@ -24,7 +24,7 @@ kind: ConfigMap
 metadata:
   name: game-demo
 data: # Les données à définir
-  # Ce sont des valeurs définies comme des varibles d'environnement; chaque clé fait référence à une valeur simple
+  # Ce sont des valeurs définies comme des variables d'environnement; chaque clé fait référence à une valeur simple
   player_initial_lives: "3"
   ui_properties_file_name: "user-interface.properties"
 
@@ -57,7 +57,7 @@ spec:
       containers:
         - name: kuard
           image: gcr.io/kuar-demo/kuard-amd64:blue
-		  env: # Définit des varibles d'environnement
+		  env: # Définit des variables d'environnement
 		    - name: BAR # Le nom de la variable
 		      valueFrom: # Indique que la valeur doit être cherchée dans un autre fichier
                 configMapKeyRef: # Dit qu'il s'agit d'une Configmaps
