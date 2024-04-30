@@ -28,28 +28,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: cachix/install-nix-action@v15
+      - uses: cachix/install-nix-action@v26
         with:
-          extra_nix_config: |
-            acess-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
-        run: cd slidev/ && nix develop .#slidev --command pnpm install
+        run: cd slidev/ && nix develop .#slidev --impure --command pnpm install
 
       - name: Build
-        run: cd slidev/ && nix develop .#slidev --command pnpm slidev build --base K8SPresentation
+        run: cd slidev/ && nix develop .#slidev --impure --command pnpm slidev build --base K8SPresentation
 
       - name: Setup Pages
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@v5
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
           # Upload entire repository
           path: "slidev/dist/"
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
