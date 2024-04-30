@@ -88,11 +88,11 @@ image:
 foo: hello world # Une clé d'un dictionnaire en chaine de caractère
 bar: 123456789 # Une clé d'un dictionnaire en nombre
 baz: # Une clé d'un dictionnaire contenant elle aussi un dictionnaire
-  foo: 💙 nixos # Une clé d'un dictionnaire en chaine de caractère
-  bar: # Une clé d'un dictionnaire contenant une liste
-    - foo # Un élément de liste sous la forme d'une chaine de caractère
-    - 123 # Un élément de liste sous la forme d'un nombre
-    - baz: test # Un élément de liste représentant un dictionnaire, avec 1 clé et sa valeur sous la forme d'une chaine de caractère
+	foo: 💙 nixos # Une clé d'un dictionnaire en chaine de caractère
+	bar: # Une clé d'un dictionnaire contenant une liste
+	  - foo # Un élément de liste sous la forme d'une chaine de caractère
+	  - 123 # Un élément de liste sous la forme d'un nombre
+	  - baz: test # Un élément de liste représentant un dictionnaire, avec 1 clé et sa valeur sous la forme d'une chaine de caractère
 
 --- # Sépare 2 documents YAML, ca reviendrait à créer 2 fichiers séparée et à importer les 2. C'est très pratique pour regroupper plusieurs configs dans le meme fichier
 
@@ -438,7 +438,7 @@ kubectl get nodes -o wide
 ```yaml {all|1|2|3|4|5|6-7}
 apiVersion: apps/v1 # Donne la version du fichier de configuration
 kind: bar # Définit le type de ce que l'on veut configurer
-metadata: # Ajoute des donner supplémentaire au déployement utilisables par d'autre application / kubernetes, des métadonées quoi 😁
+metadata: # Ajoute des données supplémentaires au déploiement utilisable par d'autres applications / kubernetes, des métadonées quoi 😁
   name: HelloWorld # Donne un nom à notre config
   namespace: foo # Donne le namespace ou celui-ci va s'appliquer, par defaut kubernets le met dans le namespasce `default`
 spec: # La configuration
@@ -464,8 +464,8 @@ metadata:
   name: nginx
 spec:
   containers: # Définie les conteneur à déployer dans le pods
-  - name: nginx # Nom du conteneur
-    image: nginx:1.14.2 # Nom de l'image à télécharger
+    - name: nginx # Nom du conteneur
+      image: nginx:1.14.2 # Nom de l'image à télécharger
 ```
 
 ```yaml
@@ -558,10 +558,10 @@ spec:
   containers:
   - name: bar
     image: baz
-    volumeMounts: # Monte un volume dans le conteneur
+	volumeMounts: # Monte un volume dans le conteneur
       - name: quz # Prends le volume importé dans le pods du nom de `quz`
         mountPath: /config # Monte le volume dans `/config`
-  volumes: # Définit les volumes dans un pods
+  volumes: # Définit les volumes dans un pod
     - name: quz # Crééer un volume du nom `quz`
       {{ .StorageType }} # Les configs spécifiques aux types de volumes
 ```
@@ -597,11 +597,11 @@ metadata:
   name: kuard-deployment
   namespace: default
 spec:
-  replicas: 1 # Paramètre le deployment, lui indique combien de pod doit-il générer, 1 par défaux
+  replicas: 1 # Paramètre le deployment, lui indique combien de pods doit-il générer, 1 par défaux
   selector: # Paramètre le deployment, lui indique quel pod il doit manager
-    matchLabels: 
+    matchLabels:
       app: kuard-deployment
-  template: # Le fichier de config du pod
+  template: # Le fichier de config du pod -> [Pods | Kubernetes](https://kubernetes.io/docs/concepts/workloads/pods/#pod-templates)
     metadata:
       labels:
         app: kuard-deployment
@@ -613,7 +613,7 @@ spec:
 	        - containerPort: 80 # Le port à exposer
 	          hostPort: 8080 # Le port exposé sur un noeud
 	          protocol: TCP
-	          name: web # Donne un nom au port pour le retrouvre plus simplement
+	          name: web # Donne un nom au port pour le retrouver plus simplement
 ```
 
 ---
@@ -707,9 +707,9 @@ spec:
   ports: # Définit les ports du service
     - port: 9080 # Définit le port du service
       protocol: TCP # Définit le protocole
-      targetPort: web # Définint le port de déstination
+      targetPort: web # Définit le port de déstination
   selector: # Applique les règles pour choisirs à qui rediriger le flux
-    app: kuard
+    app: kuard-svc
 ```
 
 <v-clicks>
@@ -855,7 +855,7 @@ kind: Secret
 metadata:
   name: mysecret
 type: Opaque # Dit que le secret peut contenir des valeurs arbitraires
-data: # Contient les valeurs du secrets
+data: # Contient les datas du secret
   username: YWRtaW4= # Chaine en bas64 -> admin
   password: MWYyZDFlMmU2N2Rm # Chaine en base64 -> 1f2d1e2e67df
 ```
@@ -867,7 +867,7 @@ metadata:
   name: myregistrykey
   namespace: awesomeapps
 type: kubernetes.io/dockerconfigjson # Dit que le secret contient des identifiants à un registry sous format JSON
-data: # Contient les valeurs du secrets
+data:
   .dockerconfigjson: UmVhbGx5IHJlYWxseSByZWVlZWVlZWVlZWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGx5eXl5eXl5eXl5eXl5eXl5eXl5eSBsbGxsbGxsbGxsbGxsbG9vb29vb29vb29vb29vb29vb29vb29vb29vb25ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubmdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2cgYXV0aCBrZXlzCg== # Chaine en base64 -> Really really reeeeeeeeeeaaaaaaaaaaaaaaaaaaaaaaaaaaalllllllllllllllllllllllllllllllyyyyyyyyyyyyyyyyyyyy llllllllllllllooooooooooooooooooooooooooonnnnnnnnnnnnnnnnnnnnnnnnggggggggggggggggggg auth keys
 ```
 
@@ -883,24 +883,24 @@ kind: Deployment
 metadata:
   name: kuard
   namespace: default
-spec: # Config de base du deployments
+spec:
   replicas: 1
   selector:
-    ...
+    matchLabels:
+      app: kuard
   template:
-    ...
+    metadata:
+      labels:
+        app: kuard
     spec:
       containers:
         - name: kuard
           image: gcr.io/kuar-demo/kuard-amd64:blue
-          env: # Définie des varibles d'environements
+		  env: # Définit des varibles d'environement
 		    - name: FOO # Le nom de la variable
 		      value: HelloWorld # Sa valeur
+
 		    - name: BAR # Le nom de la variable
-		      valueFrom: # Indique que la valeur doit être cherché dans un autre fichier
-                secretKeyRef: # Dit qu'il s'agit d'un secret
-                  name: kuard # Le nom du secret /!\ NAMESPACE /!\
-                  key: BAR # Indique qu'elle valeur prendre dans le secret
 ```
 
 ---
@@ -998,11 +998,11 @@ data: # Les données à définir
   # Ce sont des valeurs semblables à des fichiers
   game.properties: |
     enemy.types=aliens,monsters
-    player.maximum-lives=5    
+    player.maximum-lives=5
   user-interface.properties: |
     color.good=purple
     color.bad=yellow
-    allow.textmode=true  
+    allow.textmode=true
 ```
 
 ---
@@ -1013,28 +1013,34 @@ data: # Les données à définir
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  ...
+  name: kuard
+  namespace: default
 spec:
+  replicas: 1
   selector:
-    ...
+    matchLabels:
+      app: kuard
   template:
-    ...
+    metadata:
+      labels:
+        app: kuard
     spec:
       containers:
         - name: kuard
           image: gcr.io/kuar-demo/kuard-amd64:blue
-          env: # Définit des varibles d'environnement
+		  env: # Définit des varibles d'environnement
 		    - name: BAR # Le nom de la variable
 		      valueFrom: # Indique que la valeur doit être cherchée dans un autre fichier
                 configMapKeyRef: # Dit qu'il s'agit d'une Configmaps
-                  name: foobar # Le nom du Configmaps /!\ Namespace /!\
+                  name: foobar # Le nom du Configmaps /!\ Il faut que le Configmaps soit dans le même namespace que celui du deployment /!\
                   key: BAR # Indique quelle valeur prendre dans la Configmaps
 		 volumeMounts: # Monte la configmaps
-           ...
-      volumes:
-        - name: foobarbaz
-          configMap: # Précise que le volume est du genre configmaps
-            name: qux # indique le nom de la configmaps
+		    - name: foobarbaz
+		      mountPath: /config
+	  volumes:
+	    - name: foobarbaz
+	      configMap: # Précise que le volume est du genre configmaps
+	        name: qux # indique le nom de la configmaps
 ```
 ---
 
